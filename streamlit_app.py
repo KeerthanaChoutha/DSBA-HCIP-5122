@@ -29,20 +29,20 @@ st.dataframe(sales_by_month)
 # Here the grouped months are the index and automatically used for the x axis
 st.line_chart(sales_by_month, y="Sales")
 
-# answer 1
+# answer 1- adding dropdown for category
 category = st.selectbox("Select a Category", df['Category'].unique())
-# (2) Add a multi-select for Sub-Category in the selected Category
+# answer 2- multi-select for Sub-Category in selected Category
 sub_categories = df[df['Category'] == category]['Sub_Category'].unique()
 selected_sub_categories = st.multiselect("Select Sub-Categories", sub_categories)
 
 if selected_sub_categories:
     filtered_df = df[(df['Category'] == category) & (df['Sub_Category'].isin(selected_sub_categories))]
 
-    # (3) Show a line chart of sales for the selected items in (2)
+    # answer 3- line chart of sales for the selected items in answer 2
     sales_by_month_filtered = filtered_df.filter(items=['Sales']).groupby(pd.Grouper(freq='M')).sum()
     st.line_chart(sales_by_month_filtered, y="Sales")
 
-    # (4) Show three metrics: total sales, total profit, and overall profit margin (%)
+    # answer 4- Show total sales, total profit, and overall profit margin
     total_sales = filtered_df['Sales'].sum()
     total_profit = filtered_df['Profit'].sum()
     overall_profit_margin = (total_profit / total_sales) * 100 if total_sales != 0 else 0
@@ -51,7 +51,7 @@ if selected_sub_categories:
     st.metric(label="Total Profit", value=f"${total_profit:,.2f}")
     st.metric(label="Overall Profit Margin (%)", value=f"{overall_profit_margin:.2f}%")
 
-    # (5) Use the delta option in the overall profit margin metric to show the difference between the overall average profit margin
+    # answer 5- show the difference between the overall average profit margin
     overall_avg_profit_margin = (df['Profit'].sum() / df['Sales'].sum()) * 100 if df['Sales'].sum() != 0 else 0
     delta = overall_profit_margin - overall_avg_profit_margin
 
