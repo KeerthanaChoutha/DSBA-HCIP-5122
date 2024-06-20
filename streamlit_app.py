@@ -29,10 +29,35 @@ st.dataframe(sales_by_month)
 # Here the grouped months are the index and automatically used for the x axis
 st.line_chart(sales_by_month, y="Sales")
 
+# answer 1
 category = st.selectbox("Select a Category", df['Category'].unique())
 
+# answer 2
+sub_categories = df[df['Category'] == category]['Sub-Category'].unique()
+selected_sub_categories = st.multiselect("Select Sub-Categories", sub_categories)
 
-st.write("### (2) add a multi-select for Sub_Category *in the selected Category (1)* (https://docs.streamlit.io/library/api-reference/widgets/st.multiselect)")
-st.write("### (3) show a line chart of sales for the selected items in (2)")
-st.write("### (4) show three metrics (https://docs.streamlit.io/library/api-reference/data/st.metric) for the selected items in (2): total sales, total profit, and overall profit margin (%)")
-st.write("### (5) use the delta option in the overall profit margin metric to show the difference between the overall average profit margin (all products across all categories)")
+# answer 3
+if selected_sub_categories:
+    filtered_df = df[(df['Category'] == category) & (df['Sub-Category'].isin(selected_sub_categories))]
+    sales_by_month_filtered = filtered_df.filter(items=['Sales']).groupby(pd.Grouper(freq='M')).sum()
+    st.line_chart(sales_by_month_filtered, y="Sales")
+
+# answer 4
+
+  total_sales = filtered_df['Sales'].sum()
+  total_profit = filtered_df['Profit'].sum()
+  overall_profit_margin = (total_profit / total_sales) * 100 if total_sales != 0 else 0
+
+  st.metric(label="Total Sales", value=f"${total_sales:,.2f}")
+  st.metric(label="Total Profit", value=f"${total_profit:,.2f}")
+  st.metric(label="Overall Profit Margin (%)", value=f"{overall_profit_margin:.2f}%")
+
+# answer 5
+
+    overall_avg_profit_margin = (df['Profit'].sum() / df['Sales'].sum()) * 100 if df['Sales'].sum() != 0 else 0
+    delta = overall_profit_margin - overall_avg_profit_margin
+
+    st.metric(label="Overall Profit Margin (%)", value=f"{overall_profit_margin:.2f}%", delta=f"{delta:.2f}%")
+
+else:
+    st.write("Please select at least one Sub-Category.")
