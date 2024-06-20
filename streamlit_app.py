@@ -31,7 +31,4 @@ st.line_chart(sales_by_month, y="Sales")
 
 # answer 1
 category = st.selectbox("Select a Category", df['Category'].unique())
-
-# answer 2
-sub_categories = df[df['Category'] == category]['Sub-Category'].unique()
-selected_sub_categories = st.multiselect("Select Sub-Categories", sub_categories)
+st.write("Column Names:", df.columns)
