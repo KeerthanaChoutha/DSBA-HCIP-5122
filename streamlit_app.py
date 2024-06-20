@@ -36,24 +36,23 @@ category = st.selectbox("Select a Category", df['Category'].unique())
 sub_categories = df[df['Category'] == category]['Sub-Category'].unique()
 selected_sub_categories = st.multiselect("Select Sub-Categories", sub_categories)
 
-# answer 3
 if selected_sub_categories:
     filtered_df = df[(df['Category'] == category) & (df['Sub-Category'].isin(selected_sub_categories))]
+
+    # answer 3
     sales_by_month_filtered = filtered_df.filter(items=['Sales']).groupby(pd.Grouper(freq='M')).sum()
     st.line_chart(sales_by_month_filtered, y="Sales")
 
-# answer 4
+    # answer 4
+    total_sales = filtered_df['Sales'].sum()
+    total_profit = filtered_df['Profit'].sum()
+    overall_profit_margin = (total_profit / total_sales) * 100 if total_sales != 0 else 0
 
-  total_sales = filtered_df['Sales'].sum()
-  total_profit = filtered_df['Profit'].sum()
-  overall_profit_margin = (total_profit / total_sales) * 100 if total_sales != 0 else 0
+    st.metric(label="Total Sales", value=f"${total_sales:,.2f}")
+    st.metric(label="Total Profit", value=f"${total_profit:,.2f}")
+    st.metric(label="Overall Profit Margin (%)", value=f"{overall_profit_margin:.2f}%")
 
-  st.metric(label="Total Sales", value=f"${total_sales:,.2f}")
-  st.metric(label="Total Profit", value=f"${total_profit:,.2f}")
-  st.metric(label="Overall Profit Margin (%)", value=f"{overall_profit_margin:.2f}%")
-
-# answer 5
-
+    # answer 5
     overall_avg_profit_margin = (df['Profit'].sum() / df['Sales'].sum()) * 100 if df['Sales'].sum() != 0 else 0
     delta = overall_profit_margin - overall_avg_profit_margin
 
